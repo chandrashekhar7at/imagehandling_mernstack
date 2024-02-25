@@ -13,7 +13,15 @@ const App = () => {
     setImgLink(null);
     const formData = new FormData();
     formData.append('file', file);
-    if(file){
+    if (!file) {
+      setError('Please select an image to upload.');
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setError('File type is not supported. Please upload an image.');
+      return;
+    }
       try {
         const response = await fetch('http://localhost:3000/uploads', {
           method: 'POST',
@@ -34,10 +42,7 @@ const App = () => {
       } catch (error) {
         setError('can not upload image')
       }
-    }else{
-      setError('can not upload image')
     }
-  };
 
   return (
     <>
@@ -56,6 +61,5 @@ const App = () => {
       {error ? error : ''}
     </>
   );
-};
-
+}
 export default App;
