@@ -8,7 +8,7 @@ const port = 3000
 
 // Set the specific origin of your frontend
 const allowedOrigins = [
-    "http://localhost:5174", // Add your frontend URL here
+    "http://localhost:5173", // Add your frontend URL here
     // Add more origins if needed
   ];
   
