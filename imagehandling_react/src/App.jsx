@@ -23,11 +23,9 @@ const App = () => {
       return;
     }
       try {
-        const response = await fetch('http://localhost:3000/uploads', {
+        const response = await fetch('/uploads', {
           method: 'POST',
           body: formData,
-          credentials: 'include',
-          mode: 'cors',
         });
         const responseData = await response.json();
         if (!responseData.success) {
