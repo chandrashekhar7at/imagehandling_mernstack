@@ -1,39 +1,45 @@
-import express from "express"
-import { mkdirp } from "mkdirp"
-import multer from "multer"
-
+import express from "express";
+import fs from "fs"
+import path from "path";
+import multer from "multer";
+import { mkdirp } from "mkdirp";
+import cors from "cors"
 const app = express()
-const port = 3000
 
+
+app.use('/upload',express.static('upload'))
 app.use(express.json())
 
 const storage = multer.diskStorage({
     destination:(req,file,cb)=>{
-      const dir = './public/Images' 
-      mkdirp.sync(dir)
-      cb(null,dir)  
+     const dir = 'upload'
+     mkdirp.sync(dir)
+     cb(null,dir)
     },
     filename:(req,file,cb)=>{
         cb(null,`${Date.now()}_${file.originalname}`)
     }
 })
-const upload = multer({storage})
-app.use('/public', express.static('public'));
+const upload = multer({storage}) 
 
-app.use('/uploads',upload.single('file'),(req,res)=>{
-    if(!req.file){
-        return res.status(401).json({success:false,message:'can not upload image'})
-    }
+app.post('/upload',upload.single('file'),(req,res)=>{
+    console.log(req.body)
     console.log(req.file)
-    const {filename,originalname} = req.file
-    const ext = originalname.split('.').pop();
-    console.log(ext)
-    const originalfilename = originalname.replace('.'+ext,'')
-    console.log(originalfilename)
+    res.status(200).json({success:true,filename:req.file.filename,destination:req.file.destination,originalname:req.file.originalname})
+})
+app.post('/deleteimage',(req,res)=>{
+    const {filename} = req.body
     console.log(filename)
-    return res.status(201).json({success:true,message:'uploaded image successfully!',path:{filename,originalfilename}})
+    // console.log(req.body)
+    const path = `./upload/${filename}`
+    if(fs.existsSync(path)){
+        fs.unlinkSync(path)
+        res.status(200).json({success:true,message:'deleted'})
+        return;
+    }
+    res.status(200).json({success:false,message:'can not delete'})
 })
 
-app.listen(port,(req,res)=>{
-    console.log(`server is listening at http://localhost:3000`)
+app.listen(8000,(req,res)=>{
+    console.log('server is listening at 8000')
 })
